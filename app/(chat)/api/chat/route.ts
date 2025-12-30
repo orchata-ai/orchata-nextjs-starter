@@ -48,7 +48,7 @@ if (!process.env.ORCHATA_API_KEY) {
     "ORCHATA_API_KEY environment variable is not set. " +
     "Please set it in your .env.local file (local) or Vercel environment variables (production). " +
     "Get your API key: https://app.orchata.ai/api-keys " +
-    "See README.md for setup instructions: https://github.com/orchata-ai/orchata-vercel-ai-starter#environment-variables"
+    "See README.md for setup instructions: https://github.com/orchata-ai/orchata-nextjs-starter#environment-variables"
   );
 }
 

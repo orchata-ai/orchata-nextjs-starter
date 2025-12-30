@@ -35,7 +35,7 @@ Get your Orchata-powered AI chatbot running in 3 steps:
 2. **Add your Orchata API key** - Get it from [app.orchata.ai](https://app.orchata.ai/api-keys)
 3. **Configure your database** - Vercel will set up Neon Postgres automatically
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/orchata-ai/orchata-vercel-ai-starter)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/orchata-ai/orchata-nextjs-starter)
 
 That's it! Your chatbot is ready to use. See [Deploy Your Own](#deploy-your-own) for detailed instructions.
 
@@ -135,7 +135,7 @@ This template uses the [Vercel AI Gateway](https://vercel.com/docs/ai-gateway) t
 
 ### One-Click Deploy to Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/orchata-ai/orchata-vercel-ai-starter)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/orchata-ai/orchata-nextjs-starter)
 
 1. Click the button above to deploy to Vercel
 2. Vercel will automatically:
@@ -181,8 +181,8 @@ After deploying:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/orchata-ai/orchata-vercel-ai-starter.git
-   cd orchata-vercel-ai-starter
+   git clone https://github.com/orchata-ai/orchata-nextjs-starter.git
+   cd orchata-nextjs-starter
    ```
 
 2. **Install dependencies**
