@@ -8,8 +8,8 @@ import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://chat.vercel.ai"),
-  title: "Next.js Chatbot Template",
-  description: "Next.js chatbot template using the AI SDK.",
+  title: "Orchata Next.js Starter",
+  description: "Next.js starter for Orchata.",
 };
 
 export const viewport = {
@@ -78,7 +78,7 @@ export default function RootLayout({
           disableTransitionOnChange
           enableSystem
         >
-          <Toaster position="top-center" />
+          <Toaster position="top-center" theme="system" />
           <SessionProvider>{children}</SessionProvider>
         </ThemeProvider>
       </body>

@@ -40,7 +40,10 @@ export const Suggestion = ({
 
   return (
     <Button
-      className={cn("cursor-pointer rounded-lg px-4", className)}
+      className={cn(
+        "cursor-pointer rounded-lg bg-primary px-4 text-black text-xs hover:bg-primary/80",
+        className
+      )}
       onClick={handleClick}
       size={size}
       type="button"

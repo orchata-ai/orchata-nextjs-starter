@@ -20,10 +20,10 @@ import { auth, type UserType } from "@/app/(auth)/auth";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
 import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
 import { getLanguageModel } from "@/lib/ai/providers";
-import { createDocument as createArtifact } from "@/lib/ai/tools/create-document";
+import { createArtifact } from "@/lib/ai/tools/create-document";
 import { getWeather } from "@/lib/ai/tools/get-weather";
 import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
-import { updateDocument as updateArtifact } from "@/lib/ai/tools/update-document";
+import { updateArtifact } from "@/lib/ai/tools/update-document";
 import { isProductionEnvironment } from "@/lib/constants";
 import {
   createStreamId,
@@ -46,9 +46,9 @@ import { type PostRequestBody, postRequestBodySchema } from "./schema";
 if (!process.env.ORCHATA_API_KEY) {
   throw new Error(
     "ORCHATA_API_KEY environment variable is not set. " +
-    "Please set it in your .env.local file (local) or Vercel environment variables (production). " +
-    "Get your API key: https://app.orchata.ai/api-keys " +
-    "See README.md for setup instructions: https://github.com/orchata-ai/orchata-nextjs-starter#environment-variables"
+      "Please set it in your .env.local file (local) or Vercel environment variables (production). " +
+      "Get your API key: https://app.orchata.ai/api-keys " +
+      "See README.md for setup instructions: https://github.com/orchata-ai/orchata-nextjs-starter#environment-variables"
   );
 }
 
@@ -304,7 +304,6 @@ export async function POST(request: Request) {
           selectedChatModel.includes("reasoning") ||
           selectedChatModel.includes("thinking");
 
-
         // Build tools object first so TypeScript can infer types
         const allTools = {
           getWeather,
@@ -332,17 +331,17 @@ export async function POST(request: Request) {
           messages: await convertToModelMessages(uiMessages),
           stopWhen: stepCountIs(5),
           experimental_activeTools: isReasoningModel
-          ? []
-          : (Object.keys(allTools) as Array<keyof typeof allTools>),
+            ? []
+            : (Object.keys(allTools) as Array<keyof typeof allTools>),
           experimental_transform: isReasoningModel
             ? undefined
             : smoothStream({ chunking: "word" }),
           providerOptions: isReasoningModel
             ? {
-              anthropic: {
-                thinking: { type: "enabled", budgetTokens: 10_000 },
-              },
-            }
+                anthropic: {
+                  thinking: { type: "enabled", budgetTokens: 10_000 },
+                },
+              }
             : undefined,
           tools: allTools,
           experimental_telemetry: {

@@ -8,15 +8,15 @@ import {
 import type { ChatMessage } from "@/lib/types";
 import { generateUUID } from "@/lib/utils";
 
-type CreateDocumentProps = {
+type CreateArtifactProps = {
   session: Session;
   dataStream: UIMessageStreamWriter<ChatMessage>;
 };
 
-export const createDocument = ({ session, dataStream }: CreateDocumentProps) =>
+export const createArtifact = ({ session, dataStream }: CreateArtifactProps) =>
   tool({
     description:
-      "Create a document for a writing or content creation activities. This tool will call other functions that will generate the contents of the document based on the title and kind.",
+      "Create an artifact for a writing or content creation activities. This tool will call other functions that will generate the contents of the artifact based on the title and kind.",
     inputSchema: z.object({
       title: z.string(),
       kind: z.enum(artifactKinds),

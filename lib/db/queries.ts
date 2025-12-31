@@ -368,7 +368,7 @@ export async function getDocumentsById({ id }: { id: string }) {
   }
 }
 
-export async function getDocumentById({ id }: { id: string }) {
+export async function getArtifactById({ id }: { id: string }) {
   try {
     const [selectedDocument] = await db
       .select()
@@ -385,7 +385,7 @@ export async function getDocumentById({ id }: { id: string }) {
   }
 }
 
-export async function deleteDocumentsByIdAfterTimestamp({
+export async function deleteArtifactsByIdAfterTimestamp({
   id,
   timestamp,
 }: {
@@ -429,7 +429,7 @@ export async function saveSuggestions({
   }
 }
 
-export async function getSuggestionsByDocumentId({
+export async function getSuggestionsByArtifactId({
   documentId,
 }: {
   documentId: string;

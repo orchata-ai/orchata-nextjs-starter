@@ -11,19 +11,17 @@
   "version": "3.1.0",
   "private": true,
   "scripts": {
+    "check": "biome check --write",
     "dev": "next dev --turbo",
     "build": "tsx lib/db/migrate && next build",
     "start": "next start",
-    "lint": "npx ultracite@latest check",
-    "format": "npx ultracite@latest fix",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "npx tsx lib/db/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "db:pull": "drizzle-kit pull",
     "db:check": "drizzle-kit check",
-    "db:up": "drizzle-kit up",
-    "test": "export PLAYWRIGHT=True && pnpm exec playwright test"
+    "db:up": "drizzle-kit up"
   },
   "dependencies": {
     "@ai-sdk/gateway": "2.0.0-beta.85",

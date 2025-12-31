@@ -15,8 +15,10 @@ type SuggestedActionsProps = {
 
 function PureSuggestedActions({ chatId, sendMessage }: SuggestedActionsProps) {
   const suggestedActions = [
+    "What spaces do you have access to?",
     "Create a new knowledge space called Essays",
-    "Write a short essay on Austin and add it to Essays",
+    "Write an essay on Austin and add it to the 'Essays' space",
+    "Read the Austin essay and tell me about it",
   ];
 
   return (

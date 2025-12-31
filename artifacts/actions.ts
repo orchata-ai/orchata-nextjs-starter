@@ -1,8 +1,8 @@
 "use server";
 
-import { getSuggestionsByDocumentId } from "@/lib/db/queries";
+import { getSuggestionsByArtifactId } from "@/lib/db/queries";
 
 export async function getSuggestions({ documentId }: { documentId: string }) {
-  const suggestions = await getSuggestionsByDocumentId({ documentId });
+  const suggestions = await getSuggestionsByArtifactId({ documentId });
   return suggestions ?? [];
 }

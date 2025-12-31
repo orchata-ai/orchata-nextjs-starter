@@ -1,7 +1,7 @@
 import { auth } from "@/app/(auth)/auth";
 import type { ArtifactKind } from "@/components/artifact";
 import {
-  deleteDocumentsByIdAfterTimestamp,
+  deleteArtifactsByIdAfterTimestamp,
   getDocumentsById,
   saveDocument,
 } from "@/lib/db/queries";
@@ -117,7 +117,7 @@ export async function DELETE(request: Request) {
     return new ChatSDKError("forbidden:document").toResponse();
   }
 
-  const documentsDeleted = await deleteDocumentsByIdAfterTimestamp({
+  const documentsDeleted = await deleteArtifactsByIdAfterTimestamp({
     id,
     timestamp: new Date(timestamp),
   });

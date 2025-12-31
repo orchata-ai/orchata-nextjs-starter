@@ -2,25 +2,25 @@ import { tool, type UIMessageStreamWriter } from "ai";
 import type { Session } from "next-auth";
 import { z } from "zod";
 import { documentHandlersByArtifactKind } from "@/lib/artifacts/server";
-import { getDocumentById } from "@/lib/db/queries";
+import { getArtifactById } from "@/lib/db/queries";
 import type { ChatMessage } from "@/lib/types";
 
-type UpdateDocumentProps = {
+type UpdateArtifactProps = {
   session: Session;
   dataStream: UIMessageStreamWriter<ChatMessage>;
 };
 
-export const updateDocument = ({ session, dataStream }: UpdateDocumentProps) =>
+export const updateArtifact = ({ session, dataStream }: UpdateArtifactProps) =>
   tool({
-    description: "Update a document with the given description.",
+    description: "Update an artifact with the given description.",
     inputSchema: z.object({
-      id: z.string().describe("The ID of the document to update"),
+      id: z.string().describe("The ID of the artifact to update"),
       description: z
         .string()
         .describe("The description of changes that need to be made"),
     }),
     execute: async ({ id, description }) => {
-      const document = await getDocumentById({ id });
+      const document = await getArtifactById({ id });
 
       if (!document) {
         return {

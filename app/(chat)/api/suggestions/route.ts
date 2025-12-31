@@ -1,5 +1,5 @@
 import { auth } from "@/app/(auth)/auth";
-import { getSuggestionsByDocumentId } from "@/lib/db/queries";
+import { getSuggestionsByArtifactId } from "@/lib/db/queries";
 import { ChatSDKError } from "@/lib/errors";
 
 export async function GET(request: Request) {
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     return new ChatSDKError("unauthorized:suggestions").toResponse();
   }
 
-  const suggestions = await getSuggestionsByDocumentId({
+  const suggestions = await getSuggestionsByArtifactId({
     documentId,
   });
 

@@ -6,57 +6,17 @@ import { useEffect, useState } from "react";
 
 const SunIcon = ({ size = 40 }: { size?: number }) => (
   <svg fill="none" height={size} viewBox="0 0 24 24" width={size}>
-    <circle cx="12" cy="12" fill="currentColor" r="5" />
-    <line stroke="currentColor" strokeWidth="2" x1="12" x2="12" y1="1" y2="3" />
-    <line
-      stroke="currentColor"
-      strokeWidth="2"
-      x1="12"
-      x2="12"
-      y1="21"
-      y2="23"
-    />
-    <line
-      stroke="currentColor"
-      strokeWidth="2"
-      x1="4.22"
-      x2="5.64"
-      y1="4.22"
-      y2="5.64"
-    />
-    <line
-      stroke="currentColor"
-      strokeWidth="2"
-      x1="18.36"
-      x2="19.78"
-      y1="18.36"
-      y2="19.78"
-    />
-    <line stroke="currentColor" strokeWidth="2" x1="1" x2="3" y1="12" y2="12" />
-    <line
-      stroke="currentColor"
-      strokeWidth="2"
-      x1="21"
-      x2="23"
-      y1="12"
-      y2="12"
-    />
-    <line
-      stroke="currentColor"
-      strokeWidth="2"
-      x1="4.22"
-      x2="5.64"
-      y1="19.78"
-      y2="18.36"
-    />
-    <line
-      stroke="currentColor"
-      strokeWidth="2"
-      x1="18.36"
-      x2="19.78"
-      y1="5.64"
-      y2="4.22"
-    />
+    <circle cx="12" cy="12" fill="currentColor" r="4.5" />
+    <g stroke="currentColor" strokeLinecap="round" strokeWidth="1.5">
+      <line x1="12" x2="12" y1="2" y2="4" />
+      <line x1="12" x2="12" y1="20" y2="22" />
+      <line x1="4.93" x2="6.34" y1="4.93" y2="6.34" />
+      <line x1="17.66" x2="19.07" y1="17.66" y2="19.07" />
+      <line x1="2" x2="4" y1="12" y2="12" />
+      <line x1="20" x2="22" y1="12" y2="12" />
+      <line x1="4.93" x2="6.34" y1="19.07" y2="17.66" />
+      <line x1="17.66" x2="19.07" y1="6.34" y2="4.93" />
+    </g>
   </svg>
 );
 
@@ -65,6 +25,10 @@ const MoonIcon = ({ size = 40 }: { size?: number }) => (
     <path
       d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79z"
       fill="currentColor"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1"
     />
   </svg>
 );
@@ -73,9 +37,12 @@ const CloudIcon = ({ size = 24 }: { size?: number }) => (
   <svg fill="none" height={size} viewBox="0 0 24 24" width={size}>
     <path
       d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"
-      fill="none"
+      fill="currentColor"
+      fillOpacity="0.15"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="1.5"
     />
   </svg>
 );
@@ -330,57 +297,74 @@ export function Weather({
   return (
     <div
       className={cx(
-        "relative flex w-full flex-col gap-3 overflow-hidden rounded-2xl p-4 shadow-lg backdrop-blur-sm",
-        {
-          "bg-gradient-to-br from-sky-400 via-blue-500 to-blue-600": isDay,
-        },
-        {
-          "bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900":
-            !isDay,
-        }
+        "relative flex w-full flex-col gap-4 overflow-hidden rounded-xl border p-5 font-sans shadow-lg",
+        isDay
+          ? "border-primary/20 bg-linear-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-amber-950/40 dark:via-orange-950/30 dark:to-amber-900/20"
+          : "border-border bg-linear-to-br from-card via-accent to-card"
       )}
     >
-      <div className="absolute inset-0 bg-white/10 backdrop-blur-sm" />
+      {/* Subtle decorative elements */}
+      <div
+        className={cx(
+          "-top-24 -right-24 pointer-events-none absolute size-48 rounded-full blur-3xl",
+          isDay ? "bg-primary/20" : "bg-primary/10"
+        )}
+      />
+      <div
+        className={cx(
+          "-bottom-16 -left-16 pointer-events-none absolute size-32 rounded-full blur-2xl",
+          isDay ? "bg-amber-300/20" : "bg-accent/30"
+        )}
+      />
 
       <div className="relative z-10">
-        <div className="mb-2 flex items-center justify-between">
-          <div className="font-medium text-white/80 text-xs">{location}</div>
-          <div className="text-white/60 text-xs">
+        {/* Header */}
+        <div className="mb-3 flex items-center justify-between">
+          <div className="font-medium text-foreground text-sm tracking-tight">
+            {location}
+          </div>
+          <div className="font-mono text-foreground-muted text-xs">
             {format(new Date(weatherAtLocation.current.time), "MMM d, h:mm a")}
           </div>
         </div>
 
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        {/* Main temperature display */}
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
             <div
-              className={cx("text-white/90", {
-                "text-yellow-200": isDay,
-                "text-blue-200": !isDay,
-              })}
+              className={cx(
+                "transition-colors",
+                isDay ? "text-primary" : "text-foreground-muted"
+              )}
             >
-              {isDay ? <SunIcon size={32} /> : <MoonIcon size={32} />}
+              {isDay ? <SunIcon size={36} /> : <MoonIcon size={36} />}
             </div>
-            <div className="font-light text-3xl text-white">
-              {n(weatherAtLocation.current.temperature_2m)}
-              <span className="text-lg text-white/80">
+            <div className="flex items-baseline gap-1">
+              <span className="font-light font-sans text-4xl text-foreground tracking-tight">
+                {n(weatherAtLocation.current.temperature_2m)}
+              </span>
+              <span className="text-foreground-muted text-xl">
                 {weatherAtLocation.current_units.temperature_2m}
               </span>
             </div>
           </div>
 
           <div className="text-right">
-            <div className="font-medium text-white/90 text-xs">
+            <div className="font-medium text-foreground text-sm">
               H: {n(currentHigh)}°
             </div>
-            <div className="text-white/70 text-xs">L: {n(currentLow)}°</div>
+            <div className="text-foreground-muted text-sm">
+              L: {n(currentLow)}°
+            </div>
           </div>
         </div>
 
-        <div className="rounded-xl bg-white/10 p-3 backdrop-blur-sm">
-          <div className="mb-2 font-medium text-white/80 text-xs">
+        {/* Hourly forecast */}
+        <div className="rounded-lg border border-border/50 bg-card/50 p-3 backdrop-blur-sm">
+          <div className="mb-3 font-medium text-foreground-muted text-xs uppercase tracking-wider">
             Hourly Forecast
           </div>
-          <div className="flex justify-between gap-1">
+          <div className="flex justify-between gap-2">
             {displayTimes.map((time, index) => {
               const hourTime = new Date(time);
               const isCurrentHour =
@@ -389,27 +373,38 @@ export function Weather({
               return (
                 <div
                   className={cx(
-                    "flex min-w-0 flex-1 flex-col items-center gap-1 rounded-md px-1 py-1.5",
-                    {
-                      "bg-white/20": isCurrentHour,
-                    }
+                    "flex min-w-0 flex-1 flex-col items-center gap-1.5 rounded-lg px-2 py-2 transition-colors",
+                    isCurrentHour
+                      ? "bg-primary/10 dark:bg-primary/20"
+                      : "hover:bg-muted/50"
                   )}
                   key={time}
                 >
-                  <div className="font-medium text-white/70 text-xs">
+                  <div
+                    className={cx(
+                      "font-mono text-xs",
+                      isCurrentHour
+                        ? "font-medium text-primary"
+                        : "text-foreground-muted"
+                    )}
+                  >
                     {index === 0 ? "Now" : format(hourTime, "ha")}
                   </div>
 
                   <div
-                    className={cx("text-white/60", {
-                      "text-yellow-200": isDay,
-                      "text-blue-200": !isDay,
-                    })}
+                    className={cx(
+                      isDay ? "text-primary/70" : "text-foreground-muted"
+                    )}
                   >
-                    <CloudIcon size={16} />
+                    <CloudIcon size={18} />
                   </div>
 
-                  <div className="font-medium text-white text-xs">
+                  <div
+                    className={cx(
+                      "font-medium text-sm",
+                      isCurrentHour ? "text-primary" : "text-foreground"
+                    )}
+                  >
                     {n(displayTemperatures[index])}°
                   </div>
                 </div>
@@ -418,14 +413,19 @@ export function Weather({
           </div>
         </div>
 
-        <div className="mt-2 flex justify-between text-white/60 text-xs">
-          <div>
-            Sunrise:{" "}
-            {format(new Date(weatherAtLocation.daily.sunrise[0]), "h:mm a")}
+        {/* Sunrise/Sunset */}
+        <div className="mt-3 flex justify-between font-mono text-foreground-muted text-xs">
+          <div className="flex items-center gap-1.5">
+            <span className="text-primary">↑</span>
+            <span>
+              {format(new Date(weatherAtLocation.daily.sunrise[0]), "h:mm a")}
+            </span>
           </div>
-          <div>
-            Sunset:{" "}
-            {format(new Date(weatherAtLocation.daily.sunset[0]), "h:mm a")}
+          <div className="flex items-center gap-1.5">
+            <span className="text-primary">↓</span>
+            <span>
+              {format(new Date(weatherAtLocation.daily.sunset[0]), "h:mm a")}
+            </span>
           </div>
         </div>
       </div>

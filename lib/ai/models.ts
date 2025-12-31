@@ -36,7 +36,7 @@ export const chatModels: ChatModel[] = [
     name: "Claude 3.7 Sonnet",
     provider: "reasoning",
     description: "Extended thinking for complex problems",
-  }
+  },
 ];
 
 // Group models by provider for UI

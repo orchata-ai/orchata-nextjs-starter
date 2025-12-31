@@ -1,6 +1,7 @@
 "use client";
 import type { UseChatHelpers } from "@ai-sdk/react";
 import equal from "fast-deep-equal";
+import { Loader2 } from "lucide-react";
 import { memo, useState } from "react";
 import type { Vote } from "@/lib/db/schema";
 import type { ChatMessage } from "@/lib/types";
@@ -21,6 +22,18 @@ import { SparklesIcon } from "./icons";
 import { MessageActions } from "./message-actions";
 import { MessageEditor } from "./message-editor";
 import { MessageReasoning } from "./message-reasoning";
+import {
+  CreateSpaceResult,
+  DeleteSpaceResult,
+  DocumentContentResult,
+  QueryKnowledgeResult,
+  RelevantSpacesResult,
+  SpaceDetailResult,
+  SpaceListResult,
+  ToolLoading,
+  UpdateSpaceResult,
+  UploadDocumentResult,
+} from "./orchata-tools";
 import { PreviewAttachment } from "./preview-attachment";
 import { Weather } from "./weather";
 
@@ -73,9 +86,9 @@ const PurePreviewMessage = ({
 
         <div
           className={cn("flex flex-col", {
-            "gap-2 md:gap-4": message.parts?.some(
-              (p) => p.type === "text" && p.text?.trim()
-            ),
+            "gap-2 md:gap-4":
+              message.parts?.some((p) => p.type === "text" && p.text?.trim()) ||
+              message.parts?.some((p) => p.type.startsWith("tool-")),
             "w-full":
               (message.role === "assistant" &&
                 (message.parts?.some(
@@ -104,6 +117,15 @@ const PurePreviewMessage = ({
               ))}
             </div>
           )}
+
+          {/* Show "Thinking..." for assistant messages with no visible content yet */}
+          {message.role === "assistant" &&
+            isLoading &&
+            message.parts?.every(
+              (p) =>
+                (p.type === "text" && (!p.text || p.text.trim() === "")) ||
+                p.type === "step-start"
+            ) && <ThinkingIndicator />}
 
           {message.parts?.map((part, index) => {
             const { type } = part;
@@ -258,7 +280,7 @@ const PurePreviewMessage = ({
               );
             }
 
-            if (type === "tool-createDocument") {
+            if (type === "tool-createArtifact") {
               const { toolCallId } = part;
 
               if (part.output && "error" in part.output) {
@@ -281,7 +303,7 @@ const PurePreviewMessage = ({
               );
             }
 
-            if (type === "tool-updateDocument") {
+            if (type === "tool-updateArtifact") {
               const { toolCallId } = part;
 
               if (part.output && "error" in part.output) {
@@ -339,6 +361,266 @@ const PurePreviewMessage = ({
               );
             }
 
+            // Orchata Knowledge Base Tools
+            if (type === "tool-queryKnowledge") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  results?: Array<{
+                    content: string;
+                    similarity: number;
+                    source?: string;
+                  }>;
+                  error?: string;
+                };
+
+                return (
+                  <QueryKnowledgeResult
+                    key={toolCallId}
+                    query={(part.input as { query?: string })?.query}
+                    results={output?.results ?? []}
+                  />
+                );
+              }
+
+              return (
+                <ToolLoading
+                  key={toolCallId}
+                  title="Searching knowledge base..."
+                />
+              );
+            }
+
+            if (type === "tool-findRelevantSpaces") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  spaces?: Array<{
+                    id: string;
+                    name: string;
+                    description?: string;
+                    relevance?: number;
+                  }>;
+                  error?: string;
+                };
+
+                return (
+                  <RelevantSpacesResult
+                    key={toolCallId}
+                    query={(part.input as { query?: string })?.query}
+                    spaces={output?.spaces ?? []}
+                  />
+                );
+              }
+
+              return (
+                <ToolLoading
+                  key={toolCallId}
+                  title="Finding relevant spaces..."
+                />
+              );
+            }
+
+            if (type === "tool-listSpaces") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  spaces?: Array<{
+                    id: string;
+                    name: string;
+                    description?: string;
+                    isArchived?: boolean;
+                  }>;
+                  error?: string;
+                };
+
+                return (
+                  <SpaceListResult
+                    key={toolCallId}
+                    spaces={output?.spaces ?? []}
+                  />
+                );
+              }
+
+              return <ToolLoading key={toolCallId} title="Loading spaces..." />;
+            }
+
+            if (type === "tool-getDocumentContent") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  content?: string;
+                  filename?: string;
+                  documentId?: string;
+                  error?: string;
+                };
+
+                return (
+                  <DocumentContentResult
+                    content={output?.content ?? ""}
+                    documentId={output?.documentId}
+                    filename={output?.filename}
+                    key={toolCallId}
+                  />
+                );
+              }
+
+              return (
+                <ToolLoading key={toolCallId} title="Loading document..." />
+              );
+            }
+
+            if (type === "tool-uploadDocument") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  success?: boolean;
+                  documentId?: string;
+                  filename?: string;
+                  spaceName?: string;
+                  error?: string;
+                };
+
+                return (
+                  <UploadDocumentResult
+                    documentId={output?.documentId}
+                    error={output?.error}
+                    filename={
+                      output?.filename ??
+                      (part.input as { filename?: string })?.filename
+                    }
+                    key={toolCallId}
+                    spaceName={output?.spaceName}
+                    success={output?.success ?? !output?.error}
+                  />
+                );
+              }
+
+              return (
+                <ToolLoading key={toolCallId} title="Uploading document..." />
+              );
+            }
+
+            if (type === "tool-createSpace") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  success?: boolean;
+                  space?: {
+                    id: string;
+                    name: string;
+                    description?: string;
+                  };
+                  // Flat format from Orchata SDK
+                  spaceId?: string;
+                  name?: string;
+                  slug?: string;
+                  error?: string;
+                };
+
+                return (
+                  <CreateSpaceResult
+                    error={output?.error}
+                    key={toolCallId}
+                    name={output?.name}
+                    slug={output?.slug}
+                    space={output?.space}
+                    spaceId={output?.spaceId}
+                    success={output?.success ?? !output?.error}
+                  />
+                );
+              }
+
+              return <ToolLoading key={toolCallId} title="Creating space..." />;
+            }
+
+            if (type === "tool-getSpace") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  success?: boolean;
+                  space?: {
+                    id: string;
+                    name: string;
+                    description?: string;
+                    slug?: string;
+                    isArchived?: boolean;
+                  };
+                  error?: string;
+                };
+
+                if (output?.space) {
+                  return (
+                    <SpaceDetailResult key={toolCallId} space={output.space} />
+                  );
+                }
+              }
+
+              return (
+                <ToolLoading
+                  key={toolCallId}
+                  title="Loading space details..."
+                />
+              );
+            }
+
+            if (type === "tool-updateSpace") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  success?: boolean;
+                  space?: {
+                    id: string;
+                    name: string;
+                    description?: string;
+                  };
+                  error?: string;
+                };
+
+                return (
+                  <UpdateSpaceResult
+                    error={output?.error}
+                    key={toolCallId}
+                    space={output?.space}
+                    success={output?.success ?? !output?.error}
+                  />
+                );
+              }
+
+              return <ToolLoading key={toolCallId} title="Updating space..." />;
+            }
+
+            if (type === "tool-deleteSpace") {
+              const { toolCallId, state } = part;
+
+              if (state === "output-available") {
+                const output = part.output as {
+                  success?: boolean;
+                  message?: string;
+                  error?: string;
+                };
+
+                return (
+                  <DeleteSpaceResult
+                    error={output?.error}
+                    key={toolCallId}
+                    message={output?.message}
+                    success={output?.success ?? !output?.error}
+                  />
+                );
+              }
+
+              return <ToolLoading key={toolCallId} title="Deleting space..." />;
+            }
+
             return null;
           })}
 
@@ -374,6 +656,22 @@ export const PreviewMessage = memo(
   }
 );
 
+/** Reusable thinking indicator - just the text, no avatar */
+export const ThinkingIndicator = () => {
+  return (
+    <div className="flex items-center gap-1.5 text-muted-foreground text-sm">
+      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+      <span>Thinking</span>
+      <span className="flex gap-0.5">
+        <span className="animate-pulse">.</span>
+        <span className="animate-pulse [animation-delay:200ms]">.</span>
+        <span className="animate-pulse [animation-delay:400ms]">.</span>
+      </span>
+    </div>
+  );
+};
+
+/** Full thinking message with avatar - used as standalone loading state */
 export const ThinkingMessage = () => {
   return (
     <div
@@ -382,21 +680,12 @@ export const ThinkingMessage = () => {
       data-testid="message-assistant-loading"
     >
       <div className="flex items-start justify-start gap-3">
-        <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
-          <div className="animate-pulse">
-            <SparklesIcon size={14} />
-          </div>
+        <div className="-mt-1 flex size-8 shrink-0 animate-pulse items-center justify-center rounded-full bg-background ring-1 ring-border">
+          <SparklesIcon size={14} />
         </div>
 
         <div className="flex w-full flex-col gap-2 md:gap-4">
-          <div className="flex items-center gap-1 p-0 text-muted-foreground text-sm">
-            <span className="animate-pulse">Thinking</span>
-            <span className="inline-flex">
-              <span className="animate-bounce [animation-delay:0ms]">.</span>
-              <span className="animate-bounce [animation-delay:150ms]">.</span>
-              <span className="animate-bounce [animation-delay:300ms]">.</span>
-            </span>
-          </div>
+          <ThinkingIndicator />
         </div>
       </div>
     </div>
